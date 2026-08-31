@@ -15,7 +15,34 @@ function App(){const[dark,setDark]=useState(true);const[data,setData]=useState<A
  const updateTx=(t:Transaction)=>{setData(d=>({...d,transactions:d.transactions.map(x=>x.id===t.id?t:x)}));syncTx(t)}; const delTx=(id:string)=>{setData(d=>({...d,transactions:d.transactions.filter(x=>x.id!==id)}));if(isSupabaseConfigured&&session)deleteTransactionRemote(id).catch(()=>{})};
  const updateSource=(s:Source)=>{setData(d=>({...d,sources:d.sources.map(x=>x.id===s.id?s:x)}));if(isSupabaseConfigured&&session)upsertSourceRemote(session.user.id,s).catch(()=>{})}; const addSource=(name:string)=>{const s:Source={id:uid(),name,category:'Другое',createdAt:new Date().toISOString()};setData(d=>({...d,sources:[...d.sources,s]}));if(isSupabaseConfigured&&session)upsertSourceRemote(session.user.id,s).catch(()=>{})};
  const updateGoal=(g:Goal)=>{setData(d=>({...d,goals:d.goals.map(x=>x.id===g.id?g:x)}));if(isSupabaseConfigured&&session)upsertGoalRemote(session.user.id,g).catch(()=>{})};
- const setCurrency=(patch:Partial<{baseCurrency:string;displayCurrency:string}>)=>{setData(d=>({...d,settings:{...d.settings,...patch}}));if(isSupabaseConfigured&&session){const p:any={};if(patch.baseCurrency)p.base_currency=patch.baseCurrency;if(patch.displayCurrency)p.display_currency=patch.displayCurrency;updateProfileRemote(session.user.id,p).catch(()=>{})}};
+const setCurrency = (
+  patch: Partial<{
+    baseCurrency: "USD" | "UZS";
+    displayCurrency: "USD" | "UZS";
+  }>
+) => {
+  setData(d => ({
+    ...d,
+    settings: {
+      ...d.settings,
+      ...patch,
+    },
+  }));
+
+  if (isSupabaseConfigured && session) {
+    const p: any = {};
+
+    if (patch.baseCurrency) {
+      p.base_currency = patch.baseCurrency;
+    }
+
+    if (patch.displayCurrency) {
+      p.display_currency = patch.displayCurrency;
+    }
+
+    updateProfileRemote(session.user.id, p).catch(() => {});
+  }
+};
  if(isSupabaseConfigured&&!authReady)return <SplashLoading/>; if(isSupabaseConfigured&&!session)return <Login/>; if(isSupabaseConfigured&&!dataReady)return <SplashLoading/>;
  return <div className="min-h-screen"><aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 p-5 flex-col border-r border-white/10 bg-black/20 backdrop-blur-xl safe-top"><Brand/><div className="mt-8 space-y-1">{nav.map(([p,l,I])=><NavItem key={p} path={p} label={l} Icon={I} active={loc.pathname===p} onClick={()=>navg(p)}/>)}</div><div className="mt-auto text-xs opacity-50">{isSupabaseConfigured?'Supabase подключён':'Локальный режим'}<br/>Последний курс: {rates.updatedAt===new Date(0).toISOString()?'нет данных':new Date(rates.updatedAt).toLocaleDateString('ru-RU')}</div></aside>
  <main className="lg:ml-64 min-h-screen pb-28 lg:pb-8 safe-top"><header className="px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between"><div className="lg:hidden"><Brand/></div><div className="hidden lg:block"><p className="text-sm opacity-60">Личные финансы</p><h1 className="text-2xl font-semibold">{nav.find(x=>x[0]===loc.pathname)?.[1]||'Dashboard'}</h1></div><button onClick={()=>setDark(v=>!v)} className="h-11 px-4 rounded-xl card text-sm">{dark?'☀️ Светлая':'🌙 Тёмная'}</button></header><div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"><Page path={loc.pathname} data={data} setData={setData} display={display} rates={rates} updateTx={updateTx} delTx={delTx} updateSource={updateSource} addSource={addSource} updateGoal={updateGoal} navg={navg} setCurrency={setCurrency} session={session} tgLinked={tgLinked} onTgLinked={()=>setTgLinked(true)} onTgUnlinked={()=>setTgLinked(false)}/></div></main>
