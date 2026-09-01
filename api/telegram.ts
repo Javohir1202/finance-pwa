@@ -189,7 +189,7 @@ async function handleMessage(msg: any) {
     return sendMessage(
       chatId,
       APP_URL ? 'Открыть приложение:' : 'Ссылка на приложение не настроена (переменная APP_URL).',
-      APP_URL ? { reply_markup: { inline_keyboard: [[{ text: '📱 Открыть', web_app: { url: APP_URL } }]] } } : {}
+      APP_URL ? { reply_markup: { inline_keyboard: [[{ text: '📱 Открыть', url: APP_URL }]] } } : {}
     );
   }
   if (text === '⚙️ Настройки') {
