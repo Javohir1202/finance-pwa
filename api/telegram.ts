@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
-import { fetchRates, toUsd, fromUsd, defaultRates } from '../src/lib/currency';
-import { fmt } from '../src/lib/format';
-import type { Currency } from '../src/lib/types';
+import { fetchRates, toUsd, fromUsd, defaultRates } from '../src/lib/currency.js';
+import { fmt } from '../src/lib/format.js';
+import type { Currency } from '../src/lib/types.js';
 
 // Server-only secrets. Never prefixed with VITE_, so Vite never bundles them into the browser.
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN as string;
